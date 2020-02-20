@@ -97,7 +97,12 @@ export class HomePage {
             });
           }
 
-          //console.log(" Result ", this.result);
+          // console.log(" I ",data.i," J ",data.j, this.matrix[data.i][data.j]);
+          // console.log("Second", secondPosition);
+          // secondPosition.forEach(s => {
+          //  console.log(" I ", s.i, " J ", s.j, this.matrix[s.i][s.j]);
+          // });
+          console.log(" Result ", this.result);
 
         });
       }
@@ -205,8 +210,14 @@ export class HomePage {
     this.result.forEach((item)=>{
         if (aux) return;
         aux = item.word.find(dt => dt.i === i && dt.j === j);
+        //if(i==1 && j ==2)
+        //  console.log("aux",aux)
         if (aux) return;
     });
+    //if(i==1 && j ==2){
+    //      console.log("aux2",aux)
+    //      console.log(" ")
+    //}
 
     if (aux) return true;
       else return false;    
