@@ -6,7 +6,12 @@ import { NavController } from "ionic-angular";
   templateUrl: "home.html"
 })
 export class HomePage {
-  resultView: Array<{ i: number; j: number; letter: string }> = [];
+  result: 
+  Array<
+  {
+    word : Array<{ i: number; j: number; letter: string }>
+    direction : string
+  }> = [];
 
   inputValue = "";
   matrix = [
@@ -35,7 +40,7 @@ export class HomePage {
   constructor(public navCtrl: NavController) {}
 
   checkIfExist() {
-    this.resultView = [];
+    this.result = [];
     this.firstLetterPosition = [];
 
     let splitedInputValue: Array<string> = this.inputValue.split("");
@@ -55,8 +60,9 @@ export class HomePage {
             if (x && splitedInputValue[1] === this.matrix[x.i][x.j]) {
               x.letter = splitedInputValue[1];
               secondPosition.push(x);
-              this.mountWord(data.i, data.j, splitedInputValue[0]);
-              this.mountWord(x.i, x.j, x.letter);
+
+              this.mountWord(data.i, data.j, splitedInputValue[0],p);
+              this.mountWord(x.i, x.j, x.letter, x.direction);
             }
           });
 
@@ -66,7 +72,10 @@ export class HomePage {
             copySecondPosition.forEach(s => {
               let position: number = 2;
               let k = s;
+              
+
               do {
+
                 let x = this.positionNextLetter(k.i, k.j, s.direction);
 
                 if (
@@ -74,9 +83,12 @@ export class HomePage {
                   splitedInputValue[position] === this.matrix[x.i][x.j]
                 ) {
                   x.letter = splitedInputValue[position];
-                  this.mountWord(x.i, x.j, x.letter);
+
+                  this.mountWord(x.i, x.j, x.letter,x.direction);
+
                   k = x;
                 } else {
+                  this.removeWord(s.direction);
                   break;
                 }
 
@@ -85,12 +97,8 @@ export class HomePage {
             });
           }
 
-          // console.log(" I ",data.i," J ",data.j, this.matrix[data.i][data.j]);
-          // console.log("Second", secondPosition);
-          // secondPosition.forEach(s => {
-          //  console.log(" I ", s.i, " J ", s.j, this.matrix[s.i][s.j]);
-          // });
-          console.log(" Result ", this.resultView);
+          //console.log(" Result ", this.result);
+
         });
       }
     } else {
@@ -175,13 +183,32 @@ export class HomePage {
     }
   }
 
-  mountWord(i: number, j: number, letter: string) {
-    this.resultView.push({ i, j, letter });
+  mountWord(i: number, j: number, letter: string, direction: string) {
+    let aux = this.result.find(item=>item.direction === direction);
+    if(!aux){
+      aux = {direction:direction, word: []};
+      this.result.push(aux);
+    }
+    
+    aux.word.push({i,j,letter});
+  }
+
+  removeWord(direction: string) {
+    let aux = this.result.findIndex(item=>item.direction === direction);
+    if(aux !== -1){
+      this.result.splice(aux,1);
+    }
   }
 
   existLetter(i: number, j: number): boolean {
-    let aux = this.resultView.findIndex(dt => dt.i === i && dt.j === j);
-    if (aux !== -1) return true;
-    else return false;
+    let aux;
+    this.result.forEach((item)=>{
+        if (aux) return;
+        aux = item.word.find(dt => dt.i === i && dt.j === j);
+        if (aux) return;
+    });
+
+    if (aux) return true;
+      else return false;    
   }
 }
